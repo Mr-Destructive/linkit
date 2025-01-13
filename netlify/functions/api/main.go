@@ -73,7 +73,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
 		}
 		link.Url = Url
-		link.Commentary = &content
+		link.Commentary = content
 		createdLinkId, err := queries.CreateLink(ctx, link)
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 500, Body: err.Error()}, nil
@@ -134,14 +134,7 @@ func generateHTMLFragment(data any) (string, error) {
 			return "", err
 		}
 	case models.Link:
-		link := struct {
-			Url        string
-			Commentary string
-		}{
-			Url:        v.Url,
-			Commentary: *v.Commentary,
-		}
-		err := linkTemplate.Execute(&tpl, link)
+		err := linkTemplate.Execute(&tpl, v)
 		if err != nil {
 			return "", err
 		}

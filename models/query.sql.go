@@ -14,8 +14,8 @@ INSERT INTO links (url, commentary) VALUES (?, ?)
 `
 
 type CreateLinkParams struct {
-	Url        string  `json:"url"`
-	Commentary *string `json:"commentary"`
+	Url        string `json:"url"`
+	Commentary string `json:"commentary"`
 }
 
 func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (int64, error) {
@@ -105,9 +105,9 @@ UPDATE links SET url = ?, commentary = ? WHERE id = ?
 `
 
 type UpdateLinkParams struct {
-	Url        string  `json:"url"`
-	Commentary *string `json:"commentary"`
-	ID         int64   `json:"id"`
+	Url        string `json:"url"`
+	Commentary string `json:"commentary"`
+	ID         int64  `json:"id"`
 }
 
 func (q *Queries) UpdateLink(ctx context.Context, arg UpdateLinkParams) error {
