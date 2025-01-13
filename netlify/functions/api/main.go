@@ -146,6 +146,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		return respond(req, linkObj)
 	case "DELETE":
 		linkIdStr, ok := req.PathParameters["id"]
+		log.Printf("PathParameters: %v", req.PathParameters)
 		if linkIdStr == "" {
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing link ID"}, nil
 		}
