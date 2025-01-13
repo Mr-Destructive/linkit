@@ -1,0 +1,11 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "embedsql/query.sql"
+    schema: "embedsql/schema.sql"
+    gen:
+      go:
+        package: "models"
+        out: "models"
+        emit_json_tags: true
+        emit_pointers_for_null_types: true

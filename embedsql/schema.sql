@@ -1,0 +1,5 @@
+CREATE TABLE links (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  url TEXT NOT NULL,
+  commentary TEXT
+);
