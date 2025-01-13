@@ -24,6 +24,7 @@ var (
 	queries      *models.Queries
 	linkTemplate *template.Template
 	listTemplate *template.Template
+	editTemplate *template.Template
 )
 
 func main() {
@@ -55,6 +56,21 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 
 	switch req.HTTPMethod {
 	case "GET":
+		if req.PathParameters["id"] != "" {
+			linkIdStr, ok := req.PathParameters["id"]
+			if !ok {
+				return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing link ID"}, nil
+			}
+			linkId, err := strconv.Atoi(linkIdStr)
+			if err != nil {
+				return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid link ID"}, nil
+			}
+			linkObj, err := queries.GetLink(ctx, int64(linkId))
+			if err != nil {
+				return events.APIGatewayProxyResponse{StatusCode: 500, Body: err.Error()}, nil
+			}
+			return respond(req, linkObj)
+		}
 		var links []models.Link
 		links, err = queries.ListLinks(ctx)
 		if err != nil {
@@ -81,6 +97,58 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		createdLink, err := queries.GetLink(ctx, createdLinkId)
 
 		return respond(req, createdLink)
+
+	case "PUT":
+		linkIdStr, ok := req.PathParameters["id"]
+		if !ok {
+			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing link ID"}, nil
+		}
+		formData, err := url.ParseQuery(req.Body)
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
+		}
+		if formData == nil && linkIdStr != "" {
+			linkId, err := strconv.Atoi(linkIdStr)
+			linkObj, err := queries.GetLink(ctx, int64(linkId))
+			var tpl bytes.Buffer
+			err = editTemplate.Execute(&tpl, linkObj)
+			if err != nil {
+				return events.APIGatewayProxyResponse{StatusCode: 500, Body: err.Error()}, nil
+			}
+			return events.APIGatewayProxyResponse{
+				StatusCode: 200,
+				Headers:    map[string]string{"Content-Type": "text/html"},
+				Body:       tpl.String(),
+			}, nil
+		}
+		linkId, err := strconv.Atoi(linkIdStr)
+		linkObj, err := queries.GetLink(ctx, int64(linkId))
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid link ID"}, nil
+		}
+		var link models.UpdateLinkParams
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
+		}
+		Url := formData.Get("url")
+		content := formData.Get("commentary")
+		if content == "" || Url == "" {
+			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
+		}
+		if Url != "" && Url != linkObj.Url {
+			link.Url = Url
+		}
+		link.Url = Url
+		link.Commentary = content
+		err = queries.UpdateLink(ctx, link)
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 500, Body: err.Error()}, nil
+		}
+		linkObj, err = queries.GetLink(ctx, int64(linkId))
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 500, Body: err.Error()}, nil
+		}
+		return respond(req, linkObj)
 	case "DELETE":
 		linkIdStr, ok := req.PathParameters["id"]
 		if !ok {

@@ -12,3 +12,6 @@ var LinkHTML string
 
 //go:embed list.html
 var ListHTML string
+
+//go:embed edit.html
+var EditHTML string
