@@ -58,7 +58,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	switch req.HTTPMethod {
 	case "GET":
 		if req.QueryStringParameters["id"] != "" {
-			linkIdStr, ok := req.PathParameters["id"]
+			linkIdStr, ok := req.QueryStringParameters["id"]
 			if !ok {
 				return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing link ID"}, nil
 			}
