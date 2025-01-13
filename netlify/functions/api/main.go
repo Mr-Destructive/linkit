@@ -68,7 +68,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
 		}
 		Url := formData.Get("url")
-		content := formData.Get("content")
+		content := formData.Get("commentary")
 		if content == "" || Url == "" {
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
 		}
