@@ -136,6 +136,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		if Url != "" && Url != linkObj.Url {
 			link.Url = Url
 		}
+		link.ID = linkObj.ID
 		link.Url = Url
 		link.Commentary = content
 		err = queries.UpdateLink(ctx, link)
@@ -165,7 +166,11 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 500, Body: err.Error()}, nil
 		}
-		return events.APIGatewayProxyResponse{StatusCode: 200}, nil
+		return events.APIGatewayProxyResponse{
+            StatusCode: 200,
+            Headers:    map[string]string{"Content-Type": "text/html"},
+            Body: "",
+        }, nil
 	default:
 		return events.APIGatewayProxyResponse{StatusCode: 405, Body: "Method Not Allowed"}, nil
 	}
