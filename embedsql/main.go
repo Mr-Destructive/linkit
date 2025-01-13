@@ -6,3 +6,9 @@ import (
 
 //go:embed schema.sql
 var DDL string
+
+//go:embed link.html
+var LinkHTML string
+
+//go:embed list.html
+var ListHTML string

@@ -49,8 +49,8 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		return events.APIGatewayProxyResponse{StatusCode: 500}, err
 	}
 
-	linkTemplate = template.Must(template.ParseFiles("link.html"))
-	listTemplate = template.Must(template.ParseFiles("list.html"))
+	linkTemplate = template.Must(template.New("link").Parse(embedsql.LinkHTML))
+	listTemplate = template.Must(template.New("list").Parse(embedsql.ListHTML))
 
 	switch req.HTTPMethod {
 	case "GET":
