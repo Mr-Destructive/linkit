@@ -101,7 +101,8 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 }
 
 func respond(req events.APIGatewayProxyRequest, data any) (events.APIGatewayProxyResponse, error) {
-	if req.Headers["X-Requested-With"] == "HTMX" {
+	log.Printf("request headers: %v", req.Headers)
+	if req.Headers["hx-request"] == "true" {
 		htmlFragment, err := generateHTMLFragment(data)
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 500}, err
