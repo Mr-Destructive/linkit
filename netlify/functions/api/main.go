@@ -134,7 +134,14 @@ func generateHTMLFragment(data any) (string, error) {
 			return "", err
 		}
 	case models.Link:
-		err := linkTemplate.Execute(&tpl, v)
+		link := struct {
+			Url        string
+			Commentary string
+		}{
+			Url:        v.Url,
+			Commentary: *v.Commentary,
+		}
+		err := linkTemplate.Execute(&tpl, link)
 		if err != nil {
 			return "", err
 		}
