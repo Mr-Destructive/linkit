@@ -95,14 +95,9 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			return events.APIGatewayProxyResponse{StatusCode: 500, Body: err.Error()}, nil
 		}
 		createdLink, err := queries.GetLink(ctx, createdLinkId)
-
 		return respond(req, createdLink)
-
 	case "PUT":
-		linkIdStr, ok := req.PathParameters["id"]
-		if !ok {
-			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing link ID"}, nil
-		}
+		linkIdStr := req.PathParameters["id"]
 		formData, err := url.ParseQuery(req.Body)
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
@@ -150,10 +145,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		}
 		return respond(req, linkObj)
 	case "DELETE":
-		linkIdStr, ok := req.PathParameters["id"]
-		if !ok {
-			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing link ID"}, nil
-		}
+		linkIdStr := req.PathParameters["id"]
 		linkId, err := strconv.Atoi(linkIdStr)
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid link ID"}, nil
