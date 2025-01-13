@@ -53,10 +53,11 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 
 	linkTemplate = template.Must(template.New("link").Parse(embedsql.LinkHTML))
 	listTemplate = template.Must(template.New("list").Parse(embedsql.ListHTML))
+	editTemplate = template.Must(template.New("edit").Parse(embedsql.EditHTML))
 
 	switch req.HTTPMethod {
 	case "GET":
-		if req.PathParameters["id"] != "" {
+		if req.QueryStringParameters["id"] != "" {
 			linkIdStr, ok := req.PathParameters["id"]
 			if !ok {
 				return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing link ID"}, nil
@@ -97,7 +98,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		createdLink, err := queries.GetLink(ctx, createdLinkId)
 		return respond(req, createdLink)
 	case "PUT":
-		linkIdStr := req.PathParameters["id"]
+		linkIdStr := req.QueryStringParameters["id"]
 		formData, err := url.ParseQuery(req.Body)
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
@@ -145,8 +146,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		}
 		return respond(req, linkObj)
 	case "DELETE":
-		linkIdStr, ok := req.PathParameters["id"]
-		log.Printf("PathParameters: %v", req.PathParameters)
+		linkIdStr, ok := req.QueryStringParameters["id"]
 		if linkIdStr == "" {
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Missing link ID"}, nil
 		}
