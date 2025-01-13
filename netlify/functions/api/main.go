@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 
@@ -62,10 +63,17 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		return respond(req, links)
 	case "POST":
 		var link models.CreateLinkParams
-		err = json.Unmarshal([]byte(req.Body), &link)
+		formData, err := url.ParseQuery(req.Body)
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
 		}
+		Url := formData.Get("url")
+		content := formData.Get("content")
+		if content == "" || Url == "" {
+			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
+		}
+		link.Url = Url
+		link.Commentary = &content
 		createdLinkId, err := queries.CreateLink(ctx, link)
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 500, Body: err.Error()}, nil
