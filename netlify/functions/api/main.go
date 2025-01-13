@@ -105,7 +105,7 @@ func handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 			return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
 		}
 		log.Printf("form data 2: %v", formData)
-		if formData == nil && linkIdStr != "" {
+		if len(formData) == 0 && linkIdStr != "" {
 			linkId, err := strconv.Atoi(linkIdStr)
 			linkObj, err := queries.GetLink(ctx, int64(linkId))
 			var tpl bytes.Buffer
